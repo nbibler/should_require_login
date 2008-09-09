@@ -1,0 +1,74 @@
+= Should Require Login macro
+
+ ----
+
+Firstly, and as is true with Rails, this plugin is 
+{opinionated software}[http://www.oreillynet.com/pub/a/network/2005/08/30/ruby-rails-david-heinemeier-hansson.html]
+It makes certain assumptions about the design of your application and the 
+resources which are available.  Please be sure to fully read and understand
+this document <b>before complaining</b> to the author. ;)
+
+=== What's it do?
+
+This plugin adds a method to your functional tests which is creatively named
+<tt>should_require_login</tt>.  This assertion will verify that the given 
+list of views (with optional request parameters) requires that a user be 
+authenticated prior to successful access.
+
+==== How's it do that?
+
+To verify that authentication is required, the assertion will check that 
+accessing each given view, when no user is signed in, will result in a
+redirection to your sign in page (oh, by the way, you are required to have 
+a <b>named route called <tt>login_url</tt></b>).
+
+The encapsulation of the assertion logic is written for 
+Shoulda[http://www.thoughtbot.com/projects/shoulda], and so using 
+<b>Shoulda is required</b>.  (opinionated, remember?)
+
+While I'm mentioning these nuances, I should also mention that you're required
+to also have the following methods available:
+
+<b><tt>login_as(user/nil)</tt></b>:: To set the user with whom the test should login.  This method should also accept +nil+ to log in as nobody.
+
+
+=== Example
+
+Since this plugin will really only work with Shoulda (you read that already, 
+right?), here you go:
+
+    class FoosControllerTest < ActionController::TestCase
+      
+      context 'FooController' do
+      
+        should_require_login :new, :edit
+        should_require_login :create,     :method => :post,   :params => {:name => 'bar'}
+        should_require_login :update,     :method => :put,    :params => { :id => 1 },    :with_user => lambda { users(:foo) }
+        should_require_login :destroy,    :method => :delete
+      
+      end
+      
+    end
+
+ -----
+
+=== Contribution
+
+The source for this plugin is stored in git[http://git.or.cz/] and can be 
+found on GitHub[http://github.com/nbibler/should_require_login].  Feel free
+to fork and modify it as you see fit.  I can't guarantee that I'll like what
+you do, or that I'll accept your changes into my repository, but that's the 
+joy (<i>and pain</i>) of git and of Open Source. ;)
+
+
+===== Copyright information and attributions
+
+I can't take the full credit for this plugin, merely for the pain of writing
+the same tests over and over and over and over again.  The true inspiration 
+for this plugin is rooted in that grief and then coming across the 
+{Coulda Shoulda Woulda}[http://www.metaskills.net/2008/5/30/coulda-shoulda-woulda]
+post by {Ken Collins}[http://github.com/metaskills].  I've extended it a bit 
+to add support for request parameters and HTTP request methods.
+
+Copyright (c) 2008 {Nathaniel E. Bibler}[http://www.nathanielbibler.com], 
+released under the MIT license.
