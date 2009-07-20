@@ -2,7 +2,7 @@ module ShouldRequireLogin
   
   def should_require_login(*actions)
     options = actions.extract_options!
-    options.reverse_merge({
+    options.reverse_merge!({
       :method => :get,
       :params => {}
     })
